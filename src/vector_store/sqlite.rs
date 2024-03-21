@@ -27,6 +27,15 @@ pub struct ProjectInfo {
 }
 
 impl SQLite {
+    /// Validates that a project name only contains alphanumeric characters or underscores.
+    ///
+    /// # Arguments
+    ///
+    /// * `project_name` - The project name to validate.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `project_name` contains any characters besides alphanumeric or underscore.
     fn validate_project_name(project_name: &str) {
         if !project_name
             .chars()
@@ -36,6 +45,20 @@ impl SQLite {
         }
     }
 
+    /// Checks if a project exists in the SQLite database.
+    ///
+    /// # Arguments
+    ///
+    /// * `conn` - The SQLite database connection.
+    /// * `project_name` - The name of the project to check for existence.
+    ///
+    /// # Returns
+    ///
+    /// `true` if a project with the given name exists, `false` otherwise.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the SQL query fails to execute.
     pub fn does_project_exist(conn: &Connection, project_name: &str) -> Result<bool> {
         Self::validate_project_name(project_name);
         let query = "SELECT name FROM sqlite_master WHERE type='table' AND name=?";
@@ -49,6 +72,16 @@ impl SQLite {
         }
     }
 
+    /// Creates a new project table in the SQLite database.
+    ///
+    /// # Arguments
+    ///
+    /// * `conn` - The SQLite database connection.
+    /// * `project_name` - The name of the project table to create.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the SQL query fails to execute.
     pub fn create_table(conn: &Connection, project_name: &str) -> Result<()> {
         Self::validate_project_name(project_name);
         let query = format!(
@@ -70,6 +103,16 @@ impl SQLite {
         Ok(())
     }
 
+    /// Deletes a project table from the SQLite database.
+    ///
+    /// # Arguments
+    ///
+    /// * `conn` - The SQLite database connection.
+    /// * `project_name` - The name of the project table to delete.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the SQL query fails to execute.
     pub fn delete_project(conn: &Connection, project_name: &str) -> Result<()> {
         Self::validate_project_name(project_name);
         let query = format!("DROP TABLE IF EXISTS {}", project_name);
@@ -78,6 +121,20 @@ impl SQLite {
         Ok(())
     }
 
+    /// Retrieves information about a project from the SQLite database.
+    ///
+    /// # Arguments
+    ///
+    /// * `conn` - The SQLite database connection.
+    /// * `project_name` - The name of the project to retrieve information for.
+    ///
+    /// # Returns
+    ///
+    /// A `ProjectInfo` struct containing the project name and number of code blocks, or `None` if the project doesn't exist.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the SQL query fails to execute.
     pub fn get_project_info(conn: &Connection, project_name: &str) -> Result<Option<ProjectInfo>> {
         Self::validate_project_name(project_name);
         let query = format!("SELECT COUNT(*) FROM {}", project_name);
@@ -92,6 +149,17 @@ impl SQLite {
         }
     }
 
+    /// Inserts a list of code blocks and their embeddings into a SQLite database table.
+    ///
+    /// # Arguments
+    ///
+    /// * `conn` - The SQLite database connection.
+    /// * `project_name` - The name of the project table to insert into.
+    /// * `blocks` - The list of `EmbeddedBlock` structs to insert, containing code blocks and their vector embeddings.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if any of the SQL queries fail to execute.
     pub fn insert_blocks(
         conn: &mut Connection,
         project_name: &str,
@@ -134,6 +202,20 @@ impl SQLite {
         Ok(())
     }
 
+    /// Retrieves all code blocks from a SQLite database table that are non-empty functions.
+    ///
+    /// # Arguments
+    ///  
+    /// * `conn` - The SQLite database connection.
+    /// * `project_name` - The name of the project table to retrieve blocks from.
+    ///
+    /// # Returns
+    ///
+    /// A list of `Block` structs representing the retrieved code blocks.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the SQL query fails to execute or parsing any of the data fails.
     pub fn get_all_function_blocks(
         conn: &Connection,
         project_name: &str,
@@ -173,6 +255,21 @@ impl SQLite {
         Ok(blocks)
     }
 
+    /// Searches for code blocks matching a query in a SQLite database table, filtering for non-empty functions.
+    ///
+    /// # Arguments
+    ///
+    /// * `conn` - The SQLite database connection.
+    /// * `project_name` - The name of the project table to search.
+    /// * `search_code` - The text to query code blocks for.
+    ///
+    /// # Returns
+    ///
+    /// A list of `Block` structs representing the retrieved code blocks that match the query.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the SQL query fails to execute or parsing any of the data fails.
     pub fn search_from_function_blocks(
         conn: &Connection,
         project_name: &str,
@@ -216,6 +313,21 @@ impl SQLite {
         Ok(blocks)
     }
 
+    /// Searches for code blocks with a specific function name in a SQLite database table.
+    ///
+    /// # Arguments
+    ///
+    /// * `conn` - The SQLite database connection.
+    /// * `project_name` - The name of the project table to search.
+    /// * `function_name` - The name of the function to search for.
+    ///
+    /// # Returns
+    ///
+    /// A list of `Block` structs representing the retrieved code blocks that match the function name.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the SQL query fails to execute or parsing any of the data fails.
     pub fn search_by_function_name(
         conn: &Connection,
         project_name: &str,
@@ -259,6 +371,20 @@ impl SQLite {
         Ok(blocks)
     }
 
+    /// Retrieves vector embeddings for code blocks from a SQLite database table.
+    ///
+    /// # Arguments
+    ///
+    /// * `conn` - The SQLite database connection.
+    /// * `project_name` - The name of the table to retrieve vectors from.
+    ///
+    /// # Returns
+    ///
+    /// A list of `Vector` structs representing the retrieved vectors and their corresponding code blocks.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the SQL query fails to execute or parsing any of the data fails.
     pub fn get_code_vectors(conn: &Connection, project_name: &str) -> Result<Vec<Vector>> {
         Self::validate_project_name(project_name);
         let query = format!("SELECT * FROM {}", project_name);

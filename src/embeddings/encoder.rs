@@ -40,6 +40,19 @@ pub struct NearestVectors {
 }
 
 impl Embeddings {
+    /// Generates a vector embedding for a given code block.
+    ///
+    /// # Arguments
+    ///
+    /// * `code` - The code block to generate an embedding for.
+    ///
+    /// # Returns
+    ///
+    /// A `Vector` struct containing the generated embedding and original code block.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the embedding model fails to generate a vector.
     pub fn generate_code_vector(code: String) -> Result<Vector> {
         let mut code = code;
 
@@ -52,6 +65,19 @@ impl Embeddings {
         })
     }
 
+    /// Generates a set of vector embeddings for a list of code blocks.
+    ///
+    /// # Arguments
+    ///
+    /// * `code_blocks` - A list of code blocks to generate embeddings for.
+    ///
+    /// # Returns
+    ///
+    /// A `Vec<Vector>` containing the generated embeddings paired with their original code blocks.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the embedding model fails to generate any of the vectors.
     pub fn generate_vector_set(code_blocks: Vec<String>) -> Result<Vec<Vector>> {
         let output: Vec<Vec<f32>> = MODEL.embed(code_blocks.to_owned(), None)?;
 
@@ -67,6 +93,19 @@ impl Embeddings {
         Ok(vector_set)
     }
 
+    /// Generates an `Embeddings` struct containing vector embeddings and a KD tree index for a list of code blocks.
+    ///
+    /// # Arguments
+    ///
+    /// * `code_blocks` - A list of code blocks to generate embeddings for.
+    ///
+    /// # Returns
+    ///
+    /// An `Embeddings` struct containing the generated embeddings and KD tree index.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the embedding model fails to generate any of the vectors.
     pub fn _generate_embeddings(code_blocks: Vec<String>) -> Result<Self> {
         let output: Vec<Vec<f32>> = MODEL.embed(code_blocks.to_owned(), None)?;
 
@@ -87,6 +126,21 @@ impl Embeddings {
         })
     }
 
+    /// Searches an `Embeddings` struct for the closest matches to a given code block.
+    ///
+    /// # Arguments
+    ///
+    /// * `self` - The `Embeddings` struct to search.
+    /// * `text` - The code block to search for matches to.
+    /// * `matches` - The number of closest matches to return.
+    ///
+    /// # Returns
+    ///
+    /// A `NearestVectors` struct containing the closest matching code block and a list of the top `matches` closest matches.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the embedding model fails to generate a vector for the search query.
     pub fn _search_embeddings(self, text: String, matches: usize) -> Result<NearestVectors> {
         let query: Vector = Self::generate_code_vector(text)?;
 
@@ -105,6 +159,17 @@ impl Embeddings {
         })
     }
 
+    /// Searches a list of `Vector` structs for the closest matches to a given code block.
+    ///
+    /// # Arguments
+    ///
+    /// * `vector_set` - The list of `Vector` structs to search.
+    /// * `code` - The code block to search for matches to.
+    /// * `matches` - The number of closest matches to return.
+    ///
+    /// # Returns
+    ///
+    /// A `NearestVectors` struct containing the closest matching code block and a list of the top `matches` closest matches.
     pub fn search(vector_set: Vec<Vector>, code: String, matches: usize) -> Result<NearestVectors> {
         let query: Vector = Self::generate_code_vector(code)?;
 
