@@ -1,3 +1,5 @@
+<img src=".assets/blockoli.png" alt="blockoli logo" width="250" align="right">
+
 # `blockoli` 🥦🔎
 
 Blockoli is a high-performance tool for code indexing, embedding generation and semantic search tool for use with LLMs. blockoli is built in Rust and uses the [ASTerisk](https://github.com/stitionai/asterisk) crate for semantic code parsing. blockoli allows you to efficiently index, store, and search code blocks and their embeddings using vector similarity.
