@@ -86,11 +86,4 @@ Licensed under the MIT License, see <a href="https://github.com/stitionai/blocko
 
 Support the project by starring the repository. ⭐
 
-## Acknowledgements
-
-Blockoli makes use of the following open-source libraries and tools:
-
-- [Actix Web](https://actix.rs/) for building the REST API
-- [SQLite](https://www.sqlite.org/) for storing code blocks and embeddings
-- [Asterisk](https://github.com/yourusername/asterisk) for code parsing and analysis
-- [Fastembed](https://github.com/facebookresearch/fastembed) for generating vector embeddings
+---
