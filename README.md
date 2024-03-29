@@ -26,8 +26,8 @@ cd blockoli
 3. Download `tree-sitter` grammar files
 ```
 mkdir grammars
-chmod +x get-grammar.sh
-./get-grammar.sh
+chmod +x get_grammar.sh
+./get_grammar.sh
 ```
 
 4. Build the project:
